@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LKPD Digital: Tahap Penelitian Sejarah</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Cinzel:wght@700&family=Pinyon+Script&display=swap" rel="stylesheet">
+    <!-- html2canvas untuk download sertifikat PNG -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        serif: ['Cinzel', 'serif'],
+                        script: ['Pinyon Script', 'cursive']
+                    },
+                    colors: {
+                        amber: {
+                            50: '#fffbeb',
+                            100: '#fef3c7',
+                            200: '#fde68a',
+                            700: '#b45309',
+                            800: '#92400e',
+                            900: '#78350f',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .certificate-border {
+            border: 12px double #b45309;
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen flex flex-col justify-between">
+
+    <!-- ================= SPLASH SCREEN MODAL ================= -->
+    <div id="splash-screen" class="fixed inset-0 z-50 bg-slate-900/90 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl shadow-2xl border border-amber-200/50 max-w-lg w-full p-8 relative overflow-hidden text-center space-y-6">
+            <div class="absolute -top-12 -right-12 w-36 h-36 bg-amber-500/10 rounded-full blur-2xl"></div>
+            <div class="absolute -bottom-12 -left-12 w-36 h-36 bg-amber-700/10 rounded-full blur-2xl"></div>
+
+            <div class="w-16 h-16 bg-amber-100 text-amber-800 rounded-2xl flex items-center justify-center mx-auto text-3xl shadow-md border border-amber-300">
+                <i class="fa-solid fa-landmark"></i>
+            </div>
+
+            <div>
+                <span class="px-3 py-1 bg-amber-100 text-amber-800 rounded-full text-xs font-bold uppercase tracking-wider">LKPD Digital Sejarah</span>
+                <h2 class="text-2xl font-extrabold text-slate-800 mt-2">Metodologi & Penelitian Sejarah</h2>
+                <p class="text-slate-500 text-xs mt-1">Silakan masukkan nama lengkap dan pilih kelas Anda untuk memulai.</p>
+            </div>
+
+            <form onsubmit="event.preventDefault(); submitSplashScreen();" class="space-y-4 text-left">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Nama Lengkap Siswa <span class="text-red-500">*</span></label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400"><i class="fa-solid fa-user"></i></span>
+                        <input type="text" id="splash-nama" required placeholder="Ketik Nama Lengkap..." class="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-slate-800 font-medium text-sm">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Pilih Kelas (10A - 10B) <span class="text-red-500">*</span></label>
+                    <div class="grid grid-cols-2 gap-3">
+                        <button type="button" onclick="selectClass('10A')" id="btn-class-10A" class="class-btn py-3 px-4 rounded-xl border-2 border-slate-200 hover:border-amber-500 hover:bg-amber-50/50 font-bold text-slate-700 transition flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-users text-amber-700"></i>
+                            <span>Kelas 10A</span>
+                        </button>
+                        <button type="button" onclick="selectClass('10B')" id="btn-class-10B" class="class-btn py-3 px-4 rounded-xl border-2 border-slate-200 hover:border-amber-500 hover:bg-amber-50/50 font-bold text-slate-700 transition flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-users text-amber-700"></i>
+                            <span>Kelas 10B</span>
+                        </button>
+                    </div>
+                    <input type="hidden" id="splash-kelas" required>
+                </div>
+
+                <button type="submit" class="w-full bg-gradient-to-r from-amber-700 to-amber-900 hover:from-amber-800 hover:to-yellow-900 text-white font-bold py-3.5 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all flex items-center justify-center space-x-2 text-sm mt-2">
+                    <span>Masuk ke Lembar Kerja</span>
+                    <i class="fa-solid fa-right-to-bracket"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Header / Navbar -->
+    <header class="bg-gradient-to-r from-amber-900 via-amber-800 to-yellow-900 text-white shadow-lg sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-wrap justify-between items-center gap-4">
+            <div class="flex items-center space-x-3">
+                <div class="p-2.5 bg-amber-500/20 rounded-xl border border-amber-400/30">
+                    <i class="fa-solid fa-book-bookmark text-2xl text-amber-300"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-tight text-amber-100">LKPD DIGITAL INTERAKTIF</h1>
+                    <p class="text-xs text-amber-200/80">Sejarah Kelas X • Metodologi & Penelitian Sejarah</p>
+                </div>
+            </div>
+
+            <!-- Active User Display -->
+            <div id="user-badge" class="hidden items-center bg-amber-950/60 border border-amber-600/40 px-3 py-1.5 rounded-xl text-xs space-x-2">
+                <i class="fa-solid fa-circle-user text-amber-400 text-base"></i>
+                <div>
+                    <p id="nav-user-name" class="font-bold text-white">Nama Siswa</p>
+                    <p id="nav-user-class" class="text-amber-300 text-[10px]">Kelas 10A</p>
+                </div>
+                <button onclick="reopenSplash()" title="Ubah Identitas" class="ml-2 text-amber-300 hover:text-white"><i class="fa-solid fa-pen-to-square"></i></button>
+            </div>
+
+            <!-- Navigation Tabs -->
+            <nav class="flex bg-amber-950/40 p-1.5 rounded-xl border border-amber-700/40 text-sm font-medium">
+                <button onclick="switchTab('materi')" id="tab-materi" class="px-4 py-2 rounded-lg transition-all flex items-center space-x-2 bg-amber-500 text-amber-950 font-semibold shadow">
+                    <i class="fa-solid fa-graduation-cap"></i> <span>1. Materi Lengkap</span>
+                </button>
+                <button onclick="switchTab('kuis')" id="tab-kuis" class="px-4 py-2 rounded-lg transition-all flex items-center space-x-2 text-amber-200 hover:text-white">
+                    <i class="fa-solid fa-clipboard-question"></i> <span>2. Kuis (30 Soal)</span>
+                </button>
+                <button onclick="switchTab('sertifikat')" id="tab-sertifikat" class="px-4 py-2 rounded-lg transition-all flex items-center space-x-2 text-amber-200 hover:text-white">
+                    <i class="fa-solid fa-award"></i> <span>3. Hasil & Sertifikat</span>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow w-full">
+
+        <!-- ================= TAB 1: MATERI PEMBELAJARAN LENGKAP ================= -->
+        <section id="sec-materi" class="space-y-8">
+            <!-- Hero Banner -->
+            <div class="bg-amber-900 text-white p-8 md:p-10 rounded-3xl shadow-xl relative overflow-hidden border border-amber-700">
+                <div class="absolute -right-10 -bottom-10 opacity-10 text-9xl font-serif">
+                    <i class="fa-solid fa-landmark"></i>
+                </div>
+                <div class="relative z-10 max-w-4xl space-y-3">
+                    <span class="px-3 py-1 bg-amber-500/30 border border-amber-400/40 text-amber-200 rounded-full text-xs font-semibold tracking-wider uppercase">Modul Pembelajaran Komprehensif</span>
+                    <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight">Metodologi & Tahap Penelitian Sejarah</h2>
+                    <p class="text-amber-100/90 text-sm md:text-base leading-relaxed">
+                        Sejarah bukan sekadar kumpulan cerita masa lalu, melainkan ilmu pengetahuan yang disusun secara sistematis melalui metode ilmiah. Metode sejarah adalah seperangkat aturan dan prinsip ilmiah yang digunakan oleh sejarawan untuk merekonstruksi peristiwa masa lalu secara obyektif, kritis, dan dapat dipertanggungjawabkan.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Quick Navigation Flowchart -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 text-center">
+                <a href="#materi-1" class="p-4 bg-white border border-amber-200 rounded-2xl shadow-sm hover:border-amber-500 hover:shadow-md transition group">
+                    <div class="w-10 h-10 bg-amber-100 text-amber-800 font-bold rounded-xl flex items-center justify-center mx-auto mb-2 group-hover:bg-amber-600 group-hover:text-white transition">1</div>
+                    <p class="font-bold text-slate-800 text-xs sm:text-sm">Pemilihan Topik</p>
+                </a>
+                <a href="#materi-2" class="p-4 bg-white border border-amber-200 rounded-2xl shadow-sm hover:border-amber-500 hover:shadow-md transition group">
+                    <div class="w-10 h-10 bg-amber-100 text-amber-800 font-bold rounded-xl flex items-center justify-center mx-auto mb-2 group-hover:bg-amber-600 group-hover:text-white transition">2</div>
+                    <p class="font-bold text-slate-800 text-xs sm:text-sm">Heuristik (Sumber)</p>
+                </a>
+                <a href="#materi-3" class="p-4 bg-white border border-amber-200 rounded-2xl shadow-sm hover:border-amber-500 hover:shadow-md transition group">
+                    <div class="w-10 h-10 bg-amber-100 text-amber-800 font-bold rounded-xl flex items-center justify-center mx-auto mb-2 group-hover:bg-amber-600 group-hover:text-white transition">3</div>
+                    <p class="font-bold text-slate-800 text-xs sm:text-sm">Verifikasi (Kritik)</p>
+                </a>
+                <a href="#materi-4" class="p-4 bg-white border border-amber-200 rounded-2xl shadow-sm hover:border-amber-500 hover:shadow-md transition group">
+                    <div class="w-10 h-10 bg-amber-100 text-amber-800 font-bold rounded-xl flex items-center justify-center mx-auto mb-2 group-hover:bg-amber-600 group-hover:text-white transition">4</div>
+                    <p class="font-bold text-slate-800 text-xs sm:text-sm">Interpretasi</p>
+                </a>
+                <a href="#materi-5" class="p-4 bg-white border border-amber-200 rounded-2xl shadow-sm hover:border-amber-500 hover:shadow-md transition group col-span-2 sm:col-span-1">
+                    <div class="w-10 h-10 bg-amber-100 text-amber-800 font-bold rounded-xl flex items-center justify-center mx-auto mb-2 group-hover:bg-amber-600 group-hover:text-white transition">5</div>
+                    <p class="font-bold text-slate-800 text-xs sm:text-sm">Historiografi</p>
+                </a>
+            </div>
+
+            <!-- Deep Dive Content Cards -->
+            <div class="space-y-8">
+                
+                <!-- 1. PEMILIHAN TOPIK -->
+                <div id="materi-1" class="bg-white rounded-3xl border border-slate-200 p-6 md:p-8 shadow-sm space-y-6">
+                    <div class="flex items-center space-x-4 border-b border-slate-100 pb-4">
+                        <span class="w-12 h-12 rounded-2xl bg-amber-800 text-white font-bold text-xl flex items-center justify-center shadow">1</span>
+                        <div>
+                            <h3 class="text-2xl font-bold text-slate-800">1. Pemilihan Topik Penelitian</h3>
+                            <p class="text-xs sm:text-sm text-amber-700 font-medium">Langkah Awal Penentuan Fokus Kajian Ilmiah</p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4 text-slate-600 leading-relaxed text-sm">
+                        <p>
+                            Sebelum memulai penulisan dan pencarian bukti masa lalu, seorang peneliti harus menentukan masalah atau kajian spesifik yang akan diteliti. Topik sejarah yang baik bukan sekadar gagasan acak, melainkan topik yang <b>bernilai sejarah (significant)</b>, <b>orisinal</b>, serta <b>memiliki ketersediaan sumber daya</b>.
+                        </p>
+
+                        <h4 class="font-bold text-slate-800 text-base">A. Dua Syarat Utama Pemilihan Topik (Syarat Kedekatan)</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div class="p-5 bg-amber-50/70 rounded-2xl border border-amber-200/80 space-y-2">
+                                <h5 class="font-bold text-amber-900 flex items-center"><i class="fa-solid fa-heart text-red-500 mr-2"></i> 1. Kedekatan Emosional</h5>
+                                <p class="text-xs text-slate-600 leading-relaxed">
+                                    Peneliti memiliki rasa tertarik, suka, dan gairah (passion) terhadap permasalahan yang dipilih. Kedekatan emosional sangat penting agar peneliti tetap gigih, tekun, dan tahan uji ketika menghadapi kesulitan pencarian dokumen di lapangan.
+                                </p>
+                            </div>
+                            <div class="p-5 bg-blue-50/70 rounded-2xl border border-blue-200/80 space-y-2">
+                                <h5 class="font-bold text-blue-900 flex items-center"><i class="fa-solid fa-brain text-blue-500 mr-2"></i> 2. Kedekatan Intelektual</h5>
+                                <p class="text-xs text-slate-600 leading-relaxed">
+                                    Peneliti memiliki pengetahuan awal, penguasaan teori pendukung, latar belakang akademis, serta pemahaman bahasa atau keahlian pembacaan dokumen yang memadai mengenai topik tersebut.
+                                </p>
+                            </div>
+                        </div>
+
+                        <h4 class="font-bold text-slate-800 text-base pt-2">B. Aspek Pembatasan Topik (Dimensi Ruang & Waktu)</h4>
+                        <p>Topik sejarah harus dibatasi secara terukur agar pembahasan tidak terlalu luas dan dapat dianalisis secara mendalam. Pembatasan topik mencakup 2 dimensi penting:</p>
+                        <ul class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                            <li class="p-3 bg-slate-50 border border-slate-200 rounded-xl flex items-start space-x-2">
+                                <i class="fa-solid fa-clock text-amber-700 mt-0.5"></i>
+                                <span><b>Dimensi Temporal (Waktu):</b> Menentukan batasan kurun waktu terjadinya peristiwa, misalnya: <i>"Perjuangan Diplomasi Indonesia Tahun 1945–1949"</i>.</span>
+                            </li>
+                            <li class="p-3 bg-slate-50 border border-slate-200 rounded-xl flex items-start space-x-2">
+                                <i class="fa-solid fa-map-location-dot text-amber-700 mt-0.5"></i>
+                                <span><b>Dimensi Spasial (Ruang/Tempat):</b> Menentukan batasan geografis atau wilayah terjadinya peristiwa, misalnya: <i>"Dampak Perkembangan Rel Kereta Api di Semarang Tahun 1867–1900"</i>.</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- 2. HEURISTIK -->
+                <div id="materi-2" class="bg-white rounded-3xl border border-slate-200 p-6 md:p-8 shadow-sm space-y-6">
+                    <div class="flex items-center space-x-4 border-b border-slate-100 pb-4">
+                        <span class="w-12 h-12 rounded-2xl bg-amber-800 text-white font-bold text-xl flex items-center justify-center shadow">2</span>
+                        <div>
+                            <h3 class="text-2xl font-bold text-slate-800">2. Heuristik (Pengumpulan Sumber Sejarah)</h3>
+                            <p class="text-xs sm:text-sm text-amber-700 font-medium">Berasal dari bahasa Yunani "Heuriskein" yang berarti Menemukan</p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4 text-slate-600 leading-relaxed text-sm">
+                        <p>
+                            <b>Heuristik</b> adalah kegiatan atau tahap berburu dan mengumpulkan jejak-jejak masa lalu (sumber sejarah) yang relevan dengan topik penelitian. Tanpa adanya sumber sejarah, rekonstruksi masa lalu tidak mungkin dilakukan.
+                        </p>
+
+                        <!-- Sifat / Urutan Sumber -->
+                        <h4 class="font-bold text-slate-800 text-base">A. Klasifikasi Sumber Berdasarkan Sifat / Urutan Pencampaian</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="p-4 bg-amber-50/60 rounded-2xl border border-amber-200">
+                                <span class="px-2.5 py-1 bg-amber-800 text-white text-[10px] font-bold rounded-md uppercase">Sumber Utama</span>
+                                <h5 class="font-bold text-slate-800 mt-2 mb-1">1. Sumber Primer</h5>
+                                <p class="text-xs text-slate-600 leading-relaxed">
+                                    Kesaksian langsung dari pelaku atau saksi mata peristiwa sejarah yang hidup pada zaman terjadinya peristiwa tersebut.
+                                </p>
+                                <p class="text-[11px] text-amber-900 mt-2 font-semibold">Contoh: Naskah Proklamasi Klad asli, Prasasti Yupa, Arca, Wawancara Pelaku Sejarah.</p>
+                            </div>
+                            <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200">
+                                <span class="px-2.5 py-1 bg-slate-700 text-white text-[10px] font-bold rounded-md uppercase">Sumber Turunan</span>
+                                <h5 class="font-bold text-slate-800 mt-2 mb-1">2. Sumber Sekunder</h5>
+                                <p class="text-xs text-slate-600 leading-relaxed">
+                                    Hasil olahan atau interpretasi pihak kedua/sejarawan yang tidak menyaksikan langsung peristiwa tersebut.
+                                </p>
+                                <p class="text-[11px] text-slate-700 mt-2 font-semibold">Contoh: Buku teks sejarah, majalah ilmiah, ensiklopedia, laporan penelitian pihak lain.</p>
+                            </div>
+                            <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200">
+                                <span class="px-2.5 py-1 bg-slate-500 text-white text-[10px] font-bold rounded-md uppercase">Sumber Pendukung</span>
+                                <h5 class="font-bold text-slate-800 mt-2 mb-1">3. Sumber Tersier</h5>
+                                <p class="text-xs text-slate-600 leading-relaxed">
+                                    Buku-buku rujukan berisi kumpulan abstrak, indeks, atau bibliografi dari sumber sekunder dan primer.
+                                </p>
+                                <p class="text-[11px] text-slate-700 mt-2 font-semibold">Contoh: Kamus sejarah, katalog arsip perpustakaan nasional, direktori dokumen.</p>
+                            </div>
+                        </div>
+
+                        <!-- Bentuk Sumber -->
+                        <h4 class="font-bold text-slate-800 text-base pt-2">B. Klasifikasi Sumber Berdasarkan Bentuk Fisiknya</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                            <div class="p-4 border rounded-xl bg-white space-y-1 border-slate-200">
+                                <h5 class="font-bold text-slate-800 text-sm"><i class="fa-solid fa-file-lines text-amber-700 mr-2"></i>Sumber Tertulis</h5>
+                                <p class="text-slate-600">Dokumen, prasasti, babad, kronik, surat kabar kuno, diari, notulen rapat, dan arsip pemerintah.</p>
+                            </div>
+                            <div class="p-4 border rounded-xl bg-white space-y-1 border-slate-200">
+                                <h5 class="font-bold text-slate-800 text-sm"><i class="fa-solid fa-comments text-amber-700 mr-2"></i>Sumber Lisan</h5>
+                                <p class="text-slate-600">Hasil rekam wawancara dengan pelaku sejarah (Oral History) maupun cerita rakyat secara turun-temurun (Oral Tradition).</p>
+                            </div>
+                            <div class="p-4 border rounded-xl bg-white space-y-1 border-slate-200">
+                                <h5 class="font-bold text-slate-800 text-sm"><i class="fa-solid fa-monument text-amber-700 mr-2"></i>Sumber Benda / Artefak</h5>
+                                <p class="text-slate-600">Candi, benteng, peralatan perunggu, fosil, mata uang kuno, makam, perhiasan, dan patung.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. VERIFIKASI -->
+                <div id="materi-3" class="bg-white rounded-3xl border border-slate-200 p-6 md:p-8 shadow-sm space-y-6">
+                    <div class="flex items-center space-x-4 border-b border-slate-100 pb-4">
+                        <span class="w-12 h-12 rounded-2xl bg-amber-800 text-white font-bold text-xl flex items-center justify-center shadow">3</span>
+                        <div>
+                            <h3 class="text-2xl font-bold text-slate-800">3. Verifikasi (Kritik Sumber Sejarah)</h3>
+                            <p class="text-xs sm:text-sm text-amber-700 font-medium">Pengujian Keaslian Fisik dan Keabsahan Isi Dokumen</p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4 text-slate-600 leading-relaxed text-sm">
+                        <p>
+                            Sumber sejarah yang ditemukan tidak bisa langsung digunakan begitu saja. Semua data harus diuji secara kritis melalui tahap <b>Verifikasi</b> untuk memastikan otentisitas dan kredibilitasnya sehingga terhindar dari dokumen palsu atau hoaks sejarah.
+                        </p>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Kritik Eksternal -->
+                            <div class="p-6 bg-slate-50 rounded-2xl border border-slate-200 space-y-3">
+                                <div class="flex justify-between items-center">
+                                    <h4 class="font-bold text-slate-800 text-base">A. Kritik Eksternal</h4>
+                                    <span class="px-3 py-1 bg-blue-100 text-blue-800 font-bold text-xs rounded-full">Otentisitas / Keaslian Fisik</span>
+                                </div>
+                                <p class="text-xs text-slate-600 leading-relaxed">
+                                    Menguji aspek-aspek luar/fisik dari sumber sejarah untuk memastikan apakah sumber itu asli dan bukan palsu atau tiruan.
+                                </p>
+                                <div class="bg-white p-3 rounded-xl border border-slate-200 space-y-1 text-xs">
+                                    <p class="font-semibold text-slate-700">Hal-hal yang Diuji pada Kritik Eksternal:</p>
+                                    <ul class="list-disc pl-4 space-y-1 text-slate-600">
+                                        <li>Jenis dan usia bahan kertas / lontar / batu.</li>
+                                        <li>Komposisi zat kimia tinta yang digunakan.</li>
+                                        <li>Gaya bahasa, ortografi, dan ejaan huruf kuno.</li>
+                                        <li>Stempel, cap, atau segel resmi penguasa.</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- Kritik Internal -->
+                            <div class="p-6 bg-slate-50 rounded-2xl border border-slate-200 space-y-3">
+                                <div class="flex justify-between items-center">
+                                    <h4 class="font-bold text-slate-800 text-base">B. Kritik Internal</h4>
+                                    <span class="px-3 py-1 bg-emerald-100 text-emerald-800 font-bold text-xs rounded-full">Kredibilitas / Kepercayaan Isi</span>
+                                </div>
+                                <p class="text-xs text-slate-600 leading-relaxed">
+                                    Menguji kebenaran dan kesahihan substansi/isi berita yang ada di dalam dokumen setelah fisik dokumen terbukti asli.
+                                </p>
+                                <div class="bg-white p-3 rounded-xl border border-slate-200 space-y-1 text-xs">
+                                    <p class="font-semibold text-slate-700">Hal-hal yang Diuji pada Kritik Internal:</p>
+                                    <ul class="list-disc pl-4 space-y-1 text-slate-600">
+                                        <li>Netralitas dan kejujuran pembuat berita.</li>
+                                        <li>Integritas dan kondisi fisik/psikis saksi mata.</li>
+                                        <li>Membandingkan kebenaran isi dengan saksi independent lain (koroborasi).</li>
+                                        <li>Mendeteksi adanya bias ideologi atau politik.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. INTERPRETASI & 5. HISTORIOGRAFI -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Interpretasi -->
+                    <div id="materi-4" class="bg-white rounded-3xl border border-slate-200 p-6 md:p-8 shadow-sm space-y-4">
+                        <div class="flex items-center space-x-3 border-b border-slate-100 pb-3">
+                            <span class="w-10 h-10 rounded-xl bg-amber-800 text-white font-bold flex items-center justify-center">4</span>
+                            <h3 class="text-xl font-bold text-slate-800">4. Interpretasi (Penafsiran)</h3>
+                        </div>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            Proses memberikan makna, merangkai, dan menafsirkan keterkaitan antara fakta-fakta sejarah yang telah teruji kebenarannya. Pada tahap ini sejarawan harus menghindari subjektivitas berlebih.
+                        </p>
+                        <div class="space-y-2 text-xs">
+                            <div class="p-3 bg-amber-50 rounded-xl border border-amber-200">
+                                <p class="font-bold text-amber-900">a. Analisis (Menguraikan)</p>
+                                <p class="text-slate-600 mt-0.5">Memilah dan menguraikan data-data fakta sejarah secara terpisah sesuai kategori masalah.</p>
+                            </div>
+                            <div class="p-3 bg-amber-50 rounded-xl border border-amber-200">
+                                <p class="font-bold text-amber-900">b. Sintesis (Menyatukan)</p>
+                                <p class="text-slate-600 mt-0.5">Menyatukan dan merangkai fakta-fakta tersebut menjadi satu kesatuan naskah cerita yang saling terhubung logis.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Historiografi -->
+                    <div id="materi-5" class="bg-white rounded-3xl border border-slate-200 p-6 md:p-8 shadow-sm space-y-4">
+                        <div class="flex items-center space-x-3 border-b border-slate-100 pb-3">
+                            <span class="w-10 h-10 rounded-xl bg-amber-800 text-white font-bold flex items-center justify-center">5</span>
+                            <h3 class="text-xl font-bold text-slate-800">5. Historiografi (Penulisan)</h3>
+                        </div>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            Puncak dan tahap akhir penelitian berupa penyusunan laporan tertulis karya kisah sejarah secara sistematis, matematis, kronologis, dan ilmiah.
+                        </p>
+                        <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2 text-xs">
+                            <p class="font-bold text-slate-800">Prinsip Utama Historiografi Ilmiah:</p>
+                            <ul class="list-disc pl-4 space-y-1 text-slate-600">
+                                <li><b>Kronologis:</b> Penulisan sesuai urutan babak waktu terjadinya peristiwa tanpa anakronisme.</li>
+                                <li><b>Kausalitas:</b> Menjelaskan hubungan sebab-akibat timbulnya suatu peristiwa.</li>
+                                <li><b>Gaya Bahasa Ilmiah:</b> Bahasa komunikatif, obyektif, dan jujur terhadap fakta.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Action Button -->
+            <div class="text-center pt-6">
+                <button onclick="switchTab('kuis')" class="bg-gradient-to-r from-amber-700 to-yellow-800 hover:from-amber-800 hover:to-yellow-900 text-white font-bold py-4 px-10 rounded-2xl shadow-xl hover:shadow-2xl transition-all inline-flex items-center space-x-3 text-lg">
+                    <span>Mulai Pengerjaan Kuis Interaktif</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- ================= TAB 2: KUIS INTERAKTIF ================= -->
+        <section id="sec-kuis" class="hidden space-y-6">
+            <!-- Quiz Info Header -->
+            <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex flex-wrap justify-between items-center gap-4">
+                <div>
+                    <h2 class="text-xl font-bold text-slate-800">Kuis Evaluasi Penelitian Sejarah</h2>
+                    <p class="text-xs text-slate-500 mt-0.5">30 Soal • PG, PG Kompleks, & Menjodohkan</p>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <span id="quiz-progress" class="text-xs font-semibold px-3 py-1.5 bg-amber-100 text-amber-800 rounded-lg">Terjawab: 0 / 30</span>
+                    <button onclick="submitQuiz()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-4 py-2 rounded-xl shadow text-sm transition">
+                        <i class="fa-solid fa-paper-plane mr-1.5"></i> Selesaikan & Kirim
+                    </button>
+                </div>
+            </div>
+
+            <!-- Quiz Container Form -->
+            <form id="form-kuis" class="space-y-6">
+                <div id="quiz-container" class="space-y-6">
+                    <!-- Dinamis Diisi oleh JS -->
+                </div>
+
+                <div class="text-center py-6">
+                    <button type="button" onclick="submitQuiz()" class="bg-gradient-to-r from-emerald-600 to-teal-700 text-white font-bold py-4 px-10 rounded-2xl shadow-xl hover:shadow-emerald-900/20 text-lg transition transform hover:-translate-y-0.5">
+                        <i class="fa-solid fa-circle-check mr-2"></i> Submit Semua Jawaban & Lihat Hasil
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <!-- ================= TAB 3: SERTIFIKAT & HASIL ================= -->
+        <section id="sec-sertifikat" class="hidden space-y-8">
+            <!-- Status Card -->
+            <div id="status-card" class="bg-white rounded-2xl border border-slate-200 p-6 text-center shadow-sm max-w-xl mx-auto">
+                <div id="status-icon" class="w-16 h-16 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center text-3xl mx-auto mb-3">
+                    <i class="fa-solid fa-hourglass-half"></i>
+                </div>
+                <h3 id="status-title" class="text-2xl font-bold text-slate-800">Kuis Belum Diselesaikan</h3>
+                <p id="status-desc" class="text-slate-500 text-sm mt-1">Silakan kerjakan kuis evaluasi terlebih dahulu untuk melihat kelulusan dan mendownload sertifikat.</p>
+                
+                <div class="grid grid-cols-3 gap-3 my-6 max-w-sm mx-auto">
+                    <div class="p-3 bg-slate-50 rounded-xl border">
+                        <p class="text-xs text-slate-400 font-medium">Skor Total</p>
+                        <p id="res-skor" class="text-2xl font-black text-slate-700">0</p>
+                    </div>
+                    <div class="p-3 bg-slate-50 rounded-xl border">
+                        <p class="text-xs text-slate-400 font-medium">Benar</p>
+                        <p id="res-benar" class="text-2xl font-black text-emerald-600">0</p>
+                    </div>
+                    <div class="p-3 bg-slate-50 rounded-xl border">
+                        <p class="text-xs text-slate-400 font-medium">Salah</p>
+                        <p id="res-salah" class="text-2xl font-black text-rose-600">0</p>
+                    </div>
+                </div>
+
+                <button id="btn-to-quiz" onclick="switchTab('kuis')" class="px-6 py-2.5 bg-amber-600 text-white font-semibold rounded-xl text-sm hover:bg-amber-700 shadow transition">
+                    Buka Kuis Sekarang
+                </button>
+            </div>
+
+            <!-- Sertifikat Container (Hidden jika belum lulus) -->
+            <div id="cert-wrapper" class="hidden space-y-6">
+                <div class="text-center">
+                    <h3 class="text-xl font-bold text-slate-800">Pratinjau Sertifikat Kelulusan</h3>
+                    <p class="text-sm text-slate-500">Klik tombol di bawah untuk mendownload Sertifikat dalam format PNG.</p>
+                </div>
+
+                <!-- Desain Sertifikat Klasik -->
+                <div class="overflow-x-auto pb-4">
+                    <div id="certificate-canvas" class="w-[900px] h-[630px] mx-auto bg-amber-50 p-8 relative shadow-2xl rounded-lg text-slate-800 flex flex-col justify-between certificate-border" style="background-image: radial-gradient(#fde68a 1px, transparent 1px); background-size: 24px 24px;">
+                        
+                        <!-- Ornamen Sudut -->
+                        <div class="absolute top-4 left-4 text-amber-800 text-3xl"><i class="fa-solid fa-crown"></i></div>
+                        <div class="absolute top-4 right-4 text-amber-800 text-3xl"><i class="fa-solid fa-crown"></i></div>
+                        <div class="absolute bottom-4 left-4 text-amber-800 text-3xl"><i class="fa-solid fa-feather-pointed"></i></div>
+                        <div class="absolute bottom-4 right-4 text-amber-800 text-3xl"><i class="fa-solid fa-scroll"></i></div>
+
+                        <!-- Header -->
+                        <div class="text-center space-y-1 mt-4">
+                            <p class="font-serif tracking-widest text-amber-900 text-xs font-bold uppercase">Sertifikat Kelulusan LKPD Digital Sejarah</p>
+                            <h2 class="font-serif text-4xl font-bold text-amber-900 tracking-wide">SERTIFIKAT PENGHARGAAN</h2>
+                            <p class="text-xs text-amber-800 font-medium italic">Nomor: LKPD-SEJ/X/<span id="cert-id">2026-101</span></p>
+                        </div>
+
+                        <!-- Body -->
+                        <div class="text-center space-y-3">
+                            <p class="text-xs text-slate-600">Sertifikat ini diberikan secara sah kepada:</p>
+                            <h3 id="cert-nama" class="font-script text-5xl text-amber-900 font-bold py-1">Nama Peserta Didik</h3>
+                            <div class="w-48 h-0.5 bg-amber-700/40 mx-auto"></div>
+                            <p class="text-xs text-slate-700 max-w-lg mx-auto leading-relaxed">
+                                Telah berhasil menyelesaikan seluruh rangkaian materi dan evaluasi LKPD Digital Sejarah Kelas X topik <b>"Metodologi & Tahap Penelitian Sejarah"</b> dengan capaian nilai:
+                            </p>
+                            <div class="inline-block bg-amber-900 text-amber-100 px-6 py-2 rounded-xl shadow-inner border border-amber-700">
+                                <span class="text-xs uppercase tracking-wider block font-semibold text-amber-300">Nilai Akhir Evaluasi</span>
+                                <span id="cert-nilai" class="text-3xl font-black font-serif">100 / 100</span>
+                            </div>
+                        </div>
+
+                        <!-- Footer -->
+                        <div class="flex justify-between items-end px-12 mb-4 text-xs text-slate-700">
+                            <div class="text-center space-y-1">
+                                <p class="font-semibold text-slate-800">Kelas Pembelajaran</p>
+                                <p id="cert-kelas" class="text-xs font-bold text-amber-800">Kelas 10A</p>
+                                <div class="w-32 border-b border-slate-400 mx-auto pt-6"></div>
+                                <p class="text-[10px] text-slate-500">Tanda Tangan Siswa</p>
+                            </div>
+
+                            <!-- Lencana Stempel -->
+                            <div class="w-20 h-20 rounded-full border-4 border-amber-700 bg-amber-100/80 flex items-center justify-center text-center p-1 shadow-md transform -rotate-12">
+                                <div class="w-full h-full rounded-full border border-dashed border-amber-800 flex flex-col items-center justify-center text-[8px] font-bold text-amber-900">
+                                    <i class="fa-solid fa-stamp text-amber-700 text-xs mb-0.5"></i>
+                                    <span>TERVERIFIKASI</span>
+                                    <span class="text-[6px] font-normal">LULUS</span>
+                                </div>
+                            </div>
+
+                            <div class="text-center space-y-1">
+                                <p id="cert-tanggal" class="text-slate-600">21 Oktober 2026</p>
+                                <p class="font-semibold text-slate-800">Guru Mata Pelajaran</p>
+                                <div class="w-32 border-b border-slate-400 mx-auto pt-6"></div>
+                                <p class="text-[10px] font-bold text-slate-800">Tim Sejarah Kelas X</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Button Download -->
+                <div class="text-center">
+                    <button onclick="downloadCertificate()" class="bg-gradient-to-r from-amber-700 to-yellow-800 hover:from-amber-800 hover:to-yellow-900 text-white font-bold py-3.5 px-8 rounded-xl shadow-xl transition inline-flex items-center space-x-2">
+                        <i class="fa-solid fa-download"></i>
+                        <span>Download Sertifikat (PNG)</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 text-xs py-6 border-t border-slate-800 mt-12">
+        <div class="max-w-7xl mx-auto px-4 text-center space-y-2">
+            <p>© LKPD Digital Sejarah Kelas X - Pembelajaran Penelitian Sejarah</p>
+            <p class="text-slate-500">Topik Utama: Pemilihan Topik • Heuristik • Verifikasi (Kritik) • Interpretasi • Historiografi</p>
+        </div>
+    </footer>
+
+    <!-- ================= JAVASCRIPT LOGIC ================= -->
+    <script>
+        // Data Identitas Siswa
+        let studentData = {
+            nama: '',
+            kelas: ''
+        };
+
+        // Select Class Option on Splash
+        function selectClass(cls) {
+            document.getElementById('splash-kelas').value = cls;
+            
+            // Toggle active styling on buttons
+            document.querySelectorAll('.class-btn').forEach(btn => {
+                btn.classList.remove('border-amber-600', 'bg-amber-100', 'text-amber-900');
+                btn.classList.add('border-slate-200', 'text-slate-700');
+            });
+
+            const activeBtn = document.getElementById(`btn-class-${cls}`);
+            if(activeBtn) {
+                activeBtn.classList.remove('border-slate-200', 'text-slate-700');
+                activeBtn.classList.add('border-amber-600', 'bg-amber-100', 'text-amber-900');
+            }
+        }
+
+        // Handle Splash Screen Submit
+        function submitSplashScreen() {
+            const nama = document.getElementById('splash-nama').value.trim();
+            const kelas = document.getElementById('splash-kelas').value;
+
+            if (!nama) {
+                alert('Silakan masukkan nama lengkap Anda!');
+                return;
+            }
+            if (!kelas) {
+                alert('Silakan pilih kelas Anda (10A atau 10B)!');
+                return;
+            }
+
+            studentData.nama = nama;
+            studentData.kelas = `Kelas ${kelas}`;
+
+            // Update UI elements
+            document.getElementById('nav-user-name').innerText = studentData.nama;
+            document.getElementById('nav-user-class').innerText = studentData.kelas;
+            document.getElementById('user-badge').classList.remove('hidden');
+            document.getElementById('user-badge').classList.add('flex');
+
+            document.getElementById('cert-nama').innerText = studentData.nama;
+            document.getElementById('cert-kelas').innerText = studentData.kelas;
+
+            // Date text for cert
+            const now = new Date();
+            const options = { day: 'numeric', month: 'long', year: 'numeric' };
+            document.getElementById('cert-tanggal').innerText = now.toLocaleDateString('id-ID', options);
+
+            // Hide Splash
+            document.getElementById('splash-screen').classList.add('hidden');
+        }
+
+        function reopenSplash() {
+            document.getElementById('splash-screen').classList.remove('hidden');
+        }
+
+        // Data Soal 30 Butir (PG, PGX, MATCHING)
+        const questionsData = [
+            // --- 10 SOAL PG ---
+            {
+                id: 1, type: "PG",
+                q: "Langkah pertama yang harus dilakukan oleh seorang peneliti dalam melakukan penelitian sejarah adalah...",
+                options: ["A. Mengumpulkan sumber sejarah", "B. Melakukan kritik sumber", "C. Memilih dan menentukan topik", "D. Menafsirkan fakta sejarah", "E. Menulis hasil penelitian"],
+                answer: 2
+            },
+            {
+                id: 2, type: "PG",
+                q: "Istilah Heuristik berasal dari bahasa Yunani 'Heuriskein' yang memiliki arti...",
+                options: ["A. Menguji", "B. Menemukan", "C. Menafsirkan", "D. Menuliskan", "E. Menganalisis"],
+                answer: 1
+            },
+            {
+                id: 3, type: "PG",
+                q: "Berikut ini yang merupakan contoh dari sumber sejarah sekunder adalah...",
+                options: ["A. Naskah Proklamasi Klad tulisan tangan Soekarno", "B. Wawancara dengan B.M. Diah sebagai saksi Proklamasi", "C. Buku 'Sejarah Nasional Indonesia' karangan Marwati Djoened", "D. Candi Borobudur peninggalan Mataram Kuno", "E. Prasasti Yupa peninggalan Kerajaan Kutai"],
+                answer: 2
+            },
+            {
+                id: 4, type: "PG",
+                q: "Pemeriksaan terhadap keaslian bahan fisik luar dokumen (kertas, tinta, usia bahan) disebut kritik...",
+                options: ["A. Internal", "B. Eksternal", "C. Subjektif", "D. Kredibilitas", "E. Sintesis"],
+                answer: 1
+            },
+            {
+                id: 5, type: "PG",
+                q: "Tahapan menguji keterpercayaan dan kebenaran isi dari sebuah dokumen atau sumber sejarah disebut...",
+                options: ["A. Heuristik", "B. Historiografi", "C. Kritik Eksternal", "D. Kritik Internal", "E. Pemilihan Topik"],
+                answer: 3
+            },
+            {
+                id: 6, type: "PG",
+                q: "Langkah menyatukan fakta-fakta sejarah yang telah dianalisis menjadi satu kesatuan cerita yang utuh dinamakan...",
+                options: ["A. Analisis", "B. Sintesis", "C. Periodisasi", "D. Verifikasi", "E. Heuristik"],
+                answer: 1
+            },
+            {
+                id: 7, type: "PG",
+                q: "Historiografi merupakan tahapan paling akhir dalam penelitian sejarah yang berupa...",
+                options: ["A. Pengumpulan artefak di lapangan", "B. Wawancara dengan para pelaku sejarah", "C. Penulisan dan penyajikan kisah sejarah", "D. Pengujian penanggalan Karbon-14", "E. Pemilihan topik berdasarkan minat"],
+                answer: 2
+            },
+            {
+                id: 8, type: "PG",
+                q: "Syarat kedekatan emosional dalam pemilihan topik sejarah berarti...",
+                options: ["A. Peneliti memiliki wawasan luas tentang topik", "B. Peneliti menyukai dan memiliki ketertarikan terhadap topik", "C. Peneliti memiliki kerabat pejabat di lokasi penelitian", "D. Topik penelitian bernilai ekonomis tinggi", "E. Topik yang diteliti belum pernah dibahas orang lain"],
+                answer: 1
+            },
+            {
+                id: 9, type: "PG",
+                q: "Kutipan wawancara langsung dengan seorang veteran Perang Kemerdekaan 1945 termasuk dalam kategori sumber...",
+                options: ["A. Sumber Benda", "B. Sumber Sekunder", "C. Sumber Lisan Primer", "D. Sumber Tersier", "E. Sumber Visual Sekunder"],
+                answer: 2
+            },
+            {
+                id: 10, type: "PG",
+                q: "Prinsip utama yang harus dihindari oleh seorang sejarawan pada tahap Interpretasi adalah...",
+                options: ["A. Sikap Obyektif", "B. Subjektivitas yang berlebihan", "C. Kronologi waktu", "D. Penggunaan logika", "E. Analisis kritis"],
+                answer: 1
+            },
+
+            // --- 10 SOAL PGX (Kompleks) ---
+            {
+                id: 11, type: "PGX",
+                q: "[PG Kompleks] Manakah dari pernyataan berikut yang merupakan syarat topik penelitian sejarah yang baik? (Pilih 2 atau lebih)",
+                options: ["A. Memiliki kedekatan emosional", "B. Memiliki kedekatan intelektual", "C. Harus memerlukan biaya yang sangat mahal", "D. Bernilai sejarah dan orisinal"],
+                answers: [0, 1, 3]
+            },
+            {
+                id: 12, type: "PGX",
+                q: "[PG Kompleks] Pilih contoh-contoh yang termasuk dalam kelompok Sumber Primer! (Pilih 2 atau lebih)",
+                options: ["A. Teks asli Dekrit Presiden 5 Juli 1959", "B. Buku artikel analisis dampak Dekrit terbitan tahun 2020", "C. Fosil Manusia Purba di Sangiran", "D. Rangkuman materi sejarah di blog internet"],
+                answers: [0, 2]
+            },
+            {
+                id: 13, type: "PGX",
+                q: "[PG Kompleks] Hal-hal yang diuji dalam Kritik Eksternal adalah... (Pilih 2 atau lebih)",
+                options: ["A. Keaslian jenis kertas dan jenis tinta", "B. Kejujuran dan integritas penulis", "C. Usia fisik bangunan/artefak", "D. Gaya bahasa dan jenis huruf kuno"],
+                answers: [0, 2, 3]
+            },
+            {
+                id: 14, type: "PGX",
+                q: "[PG Kompleks] Mana sajakah tahapan yang termasuk dalam dua langkah utama pada Interpretasi? (Pilih 2)",
+                options: ["A. Analisis (Menguraikan)", "B. Sintesis (Menyatukan)", "C. Verifikasi (Menguji)", "D. Heuristik (Mencari)"],
+                answers: [0, 1]
+            },
+            {
+                id: 15, type: "PGX",
+                q: "[PG Kompleks] Pernyataan yang BENAR mengenai Historiografi adalah... (Pilih 2 atau lebih)",
+                options: ["A. Merupakan tahap puncak/akhir metode sejarah", "B. Berupa penulisan kisah/laporan penelitian", "C. Harus memperhatikan urutan waktu (kronologis)", "D. Dilakukan sebelum mencari sumber di lapangan"],
+                answers: [0, 1, 2]
+            },
+            {
+                id: 16, type: "PGX",
+                q: "[PG Kompleks] Sumber sejarah berdasarkan bentuknya dibagi menjadi... (Pilih 3 jawaban)",
+                options: ["A. Sumber Tertulis", "B. Sumber Lisan", "C. Sumber Benda (Artefak)", "D. Sumber Tersier"],
+                answers: [0, 1, 2]
+            },
+            {
+                id: 17, type: "PGX",
+                q: "[PG Kompleks] Berikut adalah hal-hal yang diteliti pada Kritik Internal: (Pilih 2 atau lebih)",
+                options: ["A. Kredibilitas/keterpercayaan isi saksi", "B. Kebenaran informasi jika dibandingkan sumber lain", "C. Jenis zat kimia tinta yang digunakan", "D. Obyektivitas narasi dalam dokumen"],
+                answers: [0, 1, 3]
+            },
+            {
+                id: 18, type: "PGX",
+                q: "[PG Kompleks] Kelemahan penggunaan sumber lisan (wawancara) antara lain... (Pilih 2 jawaban)",
+                options: ["A. Daya ingat pelaku sejarah yang mulai menurun (faktor usia)", "B. Kecenderungan subjektivitas pelaku untuk membela diri", "C. Tidak memiliki nilai sejarah sama sekali", "D. Selalu lebih akurat daripada dokumen tertulis"],
+                answers: [0, 1]
+            },
+            {
+                id: 19, type: "PGX",
+                q: "[PG Kompleks] Unsur-unsur yang harus ada saat membatasi ruang lingkup topik sejarah adalah... (Pilih 2)",
+                options: ["A. Spasial (Dimensi Ruang/Tempat)", "B. Temporal (Dimensi Waktu)", "C. Finansial (Biaya)", "D. Sosiologis semata"],
+                answers: [0, 1]
+            },
+            {
+                id: 20, type: "PGX",
+                q: "[PG Kompleks] Manfaat metodologi sejarah bagi seorang peneliti adalah... (Pilih 2 atau lebih)",
+                options: ["A. Menghasilkan karya sejarah yang ilmiah dan teruji", "B. Menghindari terjadinya kebohongan sejarah (hoaks)", "C. Membuat cerita sejarah menjadi mitos fantasi", "D. Memberikan petunjuk kerja yang sistematis"],
+                answers: [0, 1, 3]
+            },
+
+            // --- 10 SOAL MATCHING ---
+            {
+                id: 21, type: "MATCHING",
+                q: "[Menjodohkan] Jodohkan istilah Tahap Penelitian dengan pengertian yang tepat!",
+                left: "Heuristik",
+                options: ["Pengumpulan sumber-sumber sejarah", "Uji keaslian fisik sumber", "Penulisan karya sejarah", "Penafsiran makna fakta"],
+                answer: 0
+            },
+            {
+                id: 22, type: "MATCHING",
+                q: "[Menjodohkan] Jodohkan istilah berikut!",
+                left: "Kritik Eksternal",
+                options: ["Pengujian fisik keaslian bahan luar dokumen", "Pengujian kebenaran isi berita", "Penyatuan fakta-fakta", "Penulisan kronologis"],
+                answer: 0
+            },
+            {
+                id: 23, type: "MATCHING",
+                q: "[Menjodohkan] Jodohkan istilah berikut!",
+                left: "Kritik Internal",
+                options: ["Pengujian kebenaran dan kredibilitas isi berita", "Pengujian kertas dan tinta", "Pencarian arsip di perpustakaan", "Penentuan judul"],
+                answer: 0
+            },
+            {
+                id: 24, type: "MATCHING",
+                q: "[Menjodohkan] Jodohkan istilah berikut!",
+                left: "Sintesis",
+                options: ["Menyatukan fakta-fakta sejarah menjadi cerita utuh", "Menguraikan fakta satu per satu", "Mencari sumber lisan", "Menguji usia fosil"],
+                answer: 0
+            },
+            {
+                id: 25, type: "MATCHING",
+                q: "[Menjodohkan] Jodohkan istilah berikut!",
+                left: "Historiografi",
+                options: ["Tahap penulisan dan penyajian hasil sejarah", "Tahap verifikasi data", "Tahap penentuan lokasi", "Tahap wawancara saksi"],
+                answer: 0
+            },
+            {
+                id: 26, type: "MATCHING",
+                q: "[Menjodohkan] Pasangkan Jenis Sumber dengan Contohnya!",
+                left: "Sumber Primer Tertulis",
+                options: ["Naskah Asli Proklamasi 1945", "Buku Teks Sejarah SMA", "Rekaman podcast wawancara", "Candi Prambanan"],
+                answer: 0
+            },
+            {
+                id: 27, type: "MATCHING",
+                q: "[Menjodohkan] Pasangkan Jenis Sumber dengan Contohnya!",
+                left: "Sumber Artefak / Benda",
+                options: ["Candi, Benteng, & Mata Uang Kuno", "Surat kabar zaman Belanda", "Wawancara veteran", "Jurnal ilmiah online"],
+                answer: 0
+            },
+            {
+                id: 28, type: "MATCHING",
+                q: "[Menjodohkan] Pasangkan jenis syarat topik berikut!",
+                left: "Kedekatan Emosional",
+                options: ["Ketertarikan dan minat pribadi peneliti pada topik", "Penguasaan teori dan pengetahuan peneliti", "Ketersediaan dana penelitian", "Kemudahan akses lokasi"],
+                answer: 0
+            },
+            {
+                id: 29, type: "MATCHING",
+                q: "[Menjodohkan] Pasangkan jenis syarat topik berikut!",
+                left: "Kedekatan Intelektual",
+                options: ["Penguasaan teori dan pengetahuan mendasar oleh peneliti", "Suka dan senang dengan topik yang diteliti", "Hubungan emosional keluarga", "Minat pribadi semata"],
+                answer: 0
+            },
+            {
+                id: 30, type: "MATCHING",
+                q: "[Menjodohkan] Pasangkan aspek pembatasan topik berikut!",
+                left: "Dimensi Temporal",
+                options: ["Batasan kurun waktu terjadinya peristiwa sejarah", "Batasan lokasi/wilayah geografis peristiwa", "Batasan biaya yang digunakan", "Batasan jumlah sumber yang ditemukan"],
+                answer: 0
+            }
+        ];
+
+        // Switch Tabs
+        function switchTab(tabName) {
+            ['materi', 'kuis', 'sertifikat'].forEach(t => {
+                const btn = document.getElementById(`tab-${t}`);
+                const sec = document.getElementById(`sec-${t}`);
+                if (t === tabName) {
+                    btn.className = "px-4 py-2 rounded-lg transition-all flex items-center space-x-2 bg-amber-500 text-amber-950 font-semibold shadow";
+                    sec.classList.remove('hidden');
+                } else {
+                    btn.className = "px-4 py-2 rounded-lg transition-all flex items-center space-x-2 text-amber-200 hover:text-white";
+                    sec.classList.add('hidden');
+                }
+            });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Render Quiz
+        function renderQuiz() {
+            const container = document.getElementById('quiz-container');
+            container.innerHTML = '';
+
+            questionsData.forEach((item, index) => {
+                const card = document.createElement('div');
+                card.className = "bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4";
+                
+                let badgeType = '';
+                if(item.type === 'PG') badgeType = '<span class="px-2.5 py-1 bg-blue-100 text-blue-800 rounded font-semibold text-xs">Pilihan Ganda</span>';
+                if(item.type === 'PGX') badgeType = '<span class="px-2.5 py-1 bg-purple-100 text-purple-800 rounded font-semibold text-xs">PG Kompleks (Jawaban > 1)</span>';
+                if(item.type === 'MATCHING') badgeType = '<span class="px-2.5 py-1 bg-amber-100 text-amber-800 rounded font-semibold text-xs">Menjodohkan</span>';
+
+                let htmlContent = `
+                    <div class="flex justify-between items-start gap-3">
+                        <span class="font-bold text-amber-900 bg-amber-100 text-sm px-3 py-1 rounded-lg">Soal ${index + 1}</span>
+                        ${badgeType}
+                    </div>
+                    <p class="font-semibold text-slate-800 text-base leading-relaxed">${item.q}</p>
+                `;
+
+                if (item.type === 'PG') {
+                    htmlContent += `<div class="space-y-2 pt-2">`;
+                    item.options.forEach((opt, oIdx) => {
+                        htmlContent += `
+                            <label class="flex items-center space-x-3 p-3 rounded-xl border border-slate-200 hover:bg-amber-50/50 cursor-pointer transition">
+                                <input type="radio" name="q_${item.id}" value="${oIdx}" onchange="updateQuizProgress()" class="w-4 h-4 text-amber-600 focus:ring-amber-500">
+                                <span class="text-sm text-slate-700">${opt}</span>
+                            </label>
+                        `;
+                    });
+                    htmlContent += `</div>`;
+                } 
+                else if (item.type === 'PGX') {
+                    htmlContent += `<div class="space-y-2 pt-2">`;
+                    item.options.forEach((opt, oIdx) => {
+                        htmlContent += `
+                            <label class="flex items-center space-x-3 p-3 rounded-xl border border-slate-200 hover:bg-amber-50/50 cursor-pointer transition">
+                                <input type="checkbox" name="q_${item.id}" value="${oIdx}" onchange="updateQuizProgress()" class="w-4 h-4 text-amber-600 rounded focus:ring-amber-500">
+                                <span class="text-sm text-slate-700">${opt}</span>
+                            </label>
+                        `;
+                    });
+                    htmlContent += `</div>`;
+                }
+                else if (item.type === 'MATCHING') {
+                    htmlContent += `
+                        <div class="pt-2">
+                            <div class="p-4 bg-amber-50 rounded-xl border border-amber-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                                <div class="font-bold text-amber-900 text-sm">
+                                    <i class="fa-solid fa-link mr-1.5"></i> Pasangan untuk: <span class="text-amber-800 bg-white px-2 py-1 rounded border">${item.left}</span>
+                                </div>
+                                <select name="q_${item.id}" onchange="updateQuizProgress()" class="w-full sm:w-auto p-2.5 rounded-lg border border-amber-300 text-sm bg-white focus:ring-2 focus:ring-amber-500">
+                                    <option value="">-- Pilih Pasangan yang Tepat --</option>
+                                    ${item.options.map((opt, oIdx) => `<option value="${oIdx}">${opt}</option>`).join('')}
+                                </select>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                card.innerHTML = htmlContent;
+                container.appendChild(card);
+            });
+        }
+
+        function updateQuizProgress() {
+            let answered = 0;
+            questionsData.forEach(item => {
+                if (item.type === 'PG') {
+                    const sel = document.querySelector(`input[name="q_${item.id}"]:checked`);
+                    if (sel) answered++;
+                } else if (item.type === 'PGX') {
+                    const chks = document.querySelectorAll(`input[name="q_${item.id}"]:checked`);
+                    if (chks.length > 0) answered++;
+                } else if (item.type === 'MATCHING') {
+                    const sel = document.querySelector(`select[name="q_${item.id}"]`);
+                    if (sel && sel.value !== "") answered++;
+                }
+            });
+            document.getElementById('quiz-progress').innerText = `Terjawab: ${answered} / 30`;
+        }
+
+        function submitQuiz() {
+            if (!studentData.nama) {
+                alert('Silakan isi Nama dan Pilih Kelas di Splash Screen terlebih dahulu!');
+                reopenSplash();
+                return;
+            }
+
+            let correctCount = 0;
+
+            questionsData.forEach(item => {
+                if (item.type === 'PG') {
+                    const sel = document.querySelector(`input[name="q_${item.id}"]:checked`);
+                    if (sel && parseInt(sel.value) === item.answer) {
+                        correctCount++;
+                    }
+                } 
+                else if (item.type === 'PGX') {
+                    const chks = Array.from(document.querySelectorAll(`input[name="q_${item.id}"]:checked`)).map(c => parseInt(c.value));
+                    if (chks.length === item.answers.length && chks.every(val => item.answers.includes(val))) {
+                        correctCount++;
+                    }
+                } 
+                else if (item.type === 'MATCHING') {
+                    const sel = document.querySelector(`select[name="q_${item.id}"]`);
+                    if (sel && parseInt(sel.value) === item.answer) {
+                        correctCount++;
+                    }
+                }
+            });
+
+            const wrongCount = 30 - correctCount;
+            const finalScore = Math.round((correctCount / 30) * 100);
+
+            // Update UI
+            document.getElementById('res-skor').innerText = finalScore;
+            document.getElementById('res-benar').innerText = correctCount;
+            document.getElementById('res-salah').innerText = wrongCount;
+            document.getElementById('cert-nilai').innerText = `${finalScore} / 100`;
+
+            const statusCard = document.getElementById('status-card');
+            const certWrapper = document.getElementById('cert-wrapper');
+            const statusIcon = document.getElementById('status-icon');
+            const statusTitle = document.getElementById('status-title');
+            const statusDesc = document.getElementById('status-desc');
+            const btnToQuiz = document.getElementById('btn-to-quiz');
+
+            if (finalScore >= 70) {
+                statusIcon.className = "w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-3xl mx-auto mb-3";
+                statusIcon.innerHTML = `<i class="fa-solid fa-circle-check"></i>`;
+                statusTitle.innerText = "SELAMAT! ANDA LULUS";
+                statusTitle.className = "text-2xl font-bold text-emerald-700";
+                statusDesc.innerText = `Anda telah mencapai batas ketuntasan minimum dengan Nilai Akhir ${finalScore}. Sertifikat Anda telah diterbitkan!`;
+                btnToQuiz.classList.add('hidden');
+                certWrapper.classList.remove('hidden');
+            } else {
+                statusIcon.className = "w-16 h-16 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center text-3xl mx-auto mb-3";
+                statusIcon.innerHTML = `<i class="fa-solid fa-circle-xmark"></i>`;
+                statusTitle.innerText = "NILAI BELUM MENCUKUPI";
+                statusTitle.className = "text-2xl font-bold text-rose-700";
+                statusDesc.innerText = `Nilai Anda ${finalScore} (KKM: 70). Silakan pelajari kembali materi pada Tab 1 dan ulangi kuis.`;
+                btnToQuiz.innerText = "Ulangi Kuis";
+                btnToQuiz.classList.remove('hidden');
+                certWrapper.classList.add('hidden');
+            }
+
+            switchTab('sertifikat');
+        }
+
+        function downloadCertificate() {
+            const certElement = document.getElementById('certificate-canvas');
+            const btn = event.currentTarget;
+            const originalText = btn.innerHTML;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> Memproses Sertifikat...`;
+            btn.disabled = true;
+
+            html2canvas(certElement, {
+                scale: 2,
+                useCORS: true,
+                backgroundColor: '#fffbeb'
+            }).then(canvas => {
+                const image = canvas.toDataURL("image/png");
+                const link = document.createElement('a');
+                const cleanName = studentData.nama.replace(/[^a-zA-Z0-9]/g, "_") || "Siswa";
+                link.download = `Sertifikat_LKPD_Sejarah_${cleanName}.png`;
+                link.href = image;
+                link.click();
+
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }).catch(err => {
+                alert('Gagal mengunduh sertifikat: ' + err);
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            });
+        }
+
+        window.onload = function() {
+            renderQuiz();
+            document.getElementById('cert-id').innerText = `2026-${Math.floor(100 + Math.random() * 900)}`;
+        }
+    </script>
+</body>
+</html>
